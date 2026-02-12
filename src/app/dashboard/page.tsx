@@ -115,7 +115,7 @@ export default function Dashboard() {
         return () => window.removeEventListener('click', unlock);
     }, []);
 
-    const [toast, setToast] = useState<{ show: boolean, name: string, message: string, type: 'success' | 'error' }>({
+    const [toast, setToast] = useState<{ show: boolean, name: string, message: string, type: 'success' | 'error' | 'info' }>({
         show: false,
         name: '',
         message: '',
@@ -137,7 +137,7 @@ export default function Dashboard() {
         type: 'danger'
     });
 
-    const showToast = (name: string, message: string, type: 'success' | 'error') => {
+    const showToast = (name: string, message: string, type: 'success' | 'error' | 'info') => {
         setToast({ show: true, name, message, type });
         setTimeout(() => setToast(prev => ({ ...prev, show: false })), 4000);
     };
