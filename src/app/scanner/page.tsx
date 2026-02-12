@@ -32,6 +32,29 @@ export default function Scanner() {
     const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    // Audio Refs for Pre-loading
+    const successAudio = useRef<HTMLAudioElement | null>(null);
+    const errorAudio = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        successAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        errorAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3');
+
+        // Set these to pre-load
+        if (successAudio.current) successAudio.current.preload = 'auto';
+        if (errorAudio.current) errorAudio.current.preload = 'auto';
+    }, []);
+
+    const unlockAudio = () => {
+        // Play a silent sound to unlock the audio context for subsequent scans
+        if (successAudio.current) {
+            successAudio.current.muted = true;
+            successAudio.current.play().then(() => {
+                if (successAudio.current) successAudio.current.muted = false;
+            }).catch(() => { });
+        }
+    };
+
     // Hardware Scanner Detection
     useEffect(() => {
         let buffer = '';
@@ -110,6 +133,9 @@ export default function Scanner() {
     const startCamera = async () => {
         if (!html5QrCodeRef.current || !activeCameraId) return;
 
+        // Gesture Unlock for Audio
+        unlockAudio();
+
         setError(null);
         setScanResult(null);
 
@@ -183,16 +209,20 @@ export default function Scanner() {
                 setScanResult(data.guest);
 
                 // Success Feedback
-                const audio = new Audio('https://cdn-icons-mp3.flaticon.com/20/203/203131.mp3');
-                audio.play().catch(() => { });
+                if (successAudio.current) {
+                    successAudio.current.currentTime = 0;
+                    successAudio.current.play().catch(e => console.error("Audio play failed", e));
+                }
                 if (navigator.vibrate) navigator.vibrate(200);
             } else {
                 setError(data.error || 'Invalid Security ID');
                 setErrorDetails(data.details || null);
 
                 // Error Feedback
-                const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
-                audio.play().catch(() => { });
+                if (errorAudio.current) {
+                    errorAudio.current.currentTime = 0;
+                    errorAudio.current.play().catch(e => console.error("Audio play failed", e));
+                }
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
             }
         } catch (error) {

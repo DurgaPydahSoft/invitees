@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Upload, Search, QrCode, UserCheck, Users, Download,
     ShieldCheck, Trash2, AlertTriangle, Sun, Moon, Edit3, X, Save,
@@ -60,6 +60,35 @@ export default function Dashboard() {
 
     // Generic Feedback State
     const [isHardwareScannerDetected, setIsHardwareScannerDetected] = useState(false);
+
+    // Audio Refs for Pre-loading
+    const successAudio = useRef<HTMLAudioElement | null>(null);
+    const errorAudio = useRef<HTMLAudioElement | null>(null);
+    const isAudioUnlocked = useRef(false);
+
+    useEffect(() => {
+        successAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        errorAudio.current = new Audio('https://assets.mixkit.co/active_storage/sfx/2873/2873-preview.mp3');
+
+        const unlock = () => {
+            if (isAudioUnlocked.current) return;
+            [successAudio.current, errorAudio.current].forEach(a => {
+                if (a) {
+                    a.muted = true;
+                    a.play().then(() => {
+                        a.pause();
+                        a.muted = false;
+                    }).catch(() => { });
+                }
+            });
+            isAudioUnlocked.current = true;
+            window.removeEventListener('click', unlock);
+        };
+
+        window.addEventListener('click', unlock);
+        return () => window.removeEventListener('click', unlock);
+    }, []);
+
     const [toast, setToast] = useState<{ show: boolean, name: string, message: string, type: 'success' | 'error' }>({
         show: false,
         name: '',
@@ -244,15 +273,19 @@ export default function Dashboard() {
                     showToast(data.guest.name, 'Check-in Successful', 'success');
 
                     // Success Feedback
-                    const audio = new Audio('https://cdn-icons-mp3.flaticon.com/20/203/203131.mp3');
-                    audio.play().catch(() => { });
+                    if (successAudio.current) {
+                        successAudio.current.currentTime = 0;
+                        successAudio.current.play().catch(() => { });
+                    }
                     if (navigator.vibrate) navigator.vibrate(200);
                 } else {
                     showToast(uniqueId, data.error || 'Invalid Security ID', 'error');
 
                     // Error Feedback
-                    const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
-                    audio.play().catch(() => { });
+                    if (errorAudio.current) {
+                        errorAudio.current.currentTime = 0;
+                        errorAudio.current.play().catch(() => { });
+                    }
                     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 }
             } catch (err) {
@@ -277,7 +310,7 @@ export default function Dashboard() {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
                 width: 1.5,
-                height: 70, // Reduced from 100 to prevent vertical overflow/clipping
+                height: 65, // Reduced from 70 to prevent vertical crowding
                 displayValue: true,
                 fontSize: 20
             });
@@ -297,7 +330,7 @@ export default function Dashboard() {
                         }
                         body { 
                             width: 50mm; 
-                            height: 25mm; 
+                            height: 24.5mm; /* Reduced by 0.5mm to prevent vertical spillover */
                             margin: 0; 
                             padding: 0; 
                             display: flex; 
@@ -307,23 +340,22 @@ export default function Dashboard() {
                             background: white;
                             overflow: hidden;
                         }
-                        .safe-area {
-                            width: 46mm; /* 2mm margin on each side */
-                            height: 22mm; /* 1.5mm margin top/bottom */
+                        .barcode-container {
+                            width: 100%;
                             display: flex;
                             align-items: center;
                             justify-content: center;
                             box-sizing: border-box;
                         }
                         .barcode-img { 
-                            max-width: 100%; 
+                            width: 98%; /* Small buffer to prevent side-clipping */
                             height: auto; 
                             display: block;
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="safe-area">
+                    <div class="barcode-container">
                         <img src="${barcodeDataUrl}" class="barcode-img" />
                     </div>
                     <script>
