@@ -309,10 +309,10 @@ export default function Dashboard() {
         try {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
-                width: 1.8, // Bolder lines for better scanning
-                height: 45, // Safe height for 20mm label
+                width: 1.5,
+                height: 50,
                 displayValue: true,
-                fontSize: 14
+                fontSize: 16
             });
             const barcodeDataUrl = canvas.toDataURL("image/png");
 
@@ -322,7 +322,7 @@ export default function Dashboard() {
             const labelHtml = `
             <html>
                 <head>
-                    <title>Optimized Label - ${previewingLabel.name}</title>
+                    <title>Label - ${previewingLabel.name}</title>
                     <style>
                         @page { 
                             size: 45mm 20mm; 
@@ -335,18 +335,18 @@ export default function Dashboard() {
                             padding: 0; 
                             display: flex; 
                             flex-direction: column; 
-                            align-items: center; 
+                            align-items: flex-start; 
                             justify-content: center;
                             background: white;
                             overflow: hidden;
                         }
                         .barcode-container {
-                            width: 41mm; /* Safe width for 45mm label */
+                            width: 100%;
                             display: flex;
-                            align-items: center;
-                            justify-content: center;
+                            align-items: flex-start;
+                            justify-content: flex-start;
                             box-sizing: border-box;
-                            image-rendering: pixelated; /* Maximum sharpness */
+                            image-rendering: pixelated;
                             image-rendering: crisp-edges;
                         }
                         .barcode-img { 

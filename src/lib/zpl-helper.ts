@@ -13,7 +13,7 @@ export const generateZPL = (guest: { name: string; uniqueId: string }) => {
 ^LH0,0
 
 ^BY2,2,80
-^FO16,40
+^FO0,40
 ^BCN,80,Y,N,N
 ^FD${guest.uniqueId}^FS
 
@@ -27,12 +27,12 @@ export const generateZPL = (guest: { name: string; uniqueId: string }) => {
  * Downloads ZPL as a file for manual printing or helper-based processing.
  */
 export const downloadZPLFile = (guestName: string, zpl: string) => {
-    const blob = new Blob([zpl], { type: "application/zpl" });
+    const blob = new Blob([zpl], { type: "application/octet-stream" });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = `label_${guestName.replace(/\s+/g, '_')}.zpl`;
+    a.download = `label_${guestName.replace(/\s+/g, '_')}.lbl`;
     a.click();
 
     URL.revokeObjectURL(url);
