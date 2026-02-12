@@ -4,15 +4,16 @@
  */
 
 export const generateZPL = (guest: { name: string; uniqueId: string }) => {
-    // 203 DPI conversion for 20mm(160 dots) x 45mm(360 dots)
+    // 203 DPI conversion for 45mm(360 dots) Width x 20mm(160 dots) Height
+    // Safe Width: 41mm (~328 dots). Offset: (360 - 328) / 2 = 16 dots (2mm)
     const zpl = `
 ^XA
-^PW160
-^LL360
+^PW360
+^LL160
 ^LH0,0
 
 ^BY2,2,80
-^FO0,40
+^FO16,40
 ^BCN,80,Y,N,N
 ^FD${guest.uniqueId}^FS
 

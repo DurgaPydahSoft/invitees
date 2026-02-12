@@ -309,10 +309,10 @@ export default function Dashboard() {
         try {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
-                width: 1.5,
-                height: 50,
+                width: 1.8, // Bolder lines for better scanning
+                height: 45, // Safe height for 20mm label
                 displayValue: true,
-                fontSize: 16
+                fontSize: 14
             });
             const barcodeDataUrl = canvas.toDataURL("image/png");
 
@@ -322,7 +322,7 @@ export default function Dashboard() {
             const labelHtml = `
             <html>
                 <head>
-                    <title>2-Up Label - ${previewingLabel.name}</title>
+                    <title>Optimized Label - ${previewingLabel.name}</title>
                     <style>
                         @page { 
                             size: 45mm 20mm; 
@@ -330,27 +330,30 @@ export default function Dashboard() {
                         }
                         body { 
                             width: 45mm; 
-                            height: 19.5mm; /* Buffer to prevent vertical spillover */
+                            height: 19.5mm; 
                             margin: 0; 
                             padding: 0; 
                             display: flex; 
                             flex-direction: column; 
-                            align-items: flex-start; /* Left align */
+                            align-items: center; 
                             justify-content: center;
                             background: white;
                             overflow: hidden;
                         }
                         .barcode-container {
-                            width: 100%;
+                            width: 41mm; /* Safe width for 45mm label */
                             display: flex;
-                            align-items: flex-start;
-                            justify-content: flex-start;
+                            align-items: center;
+                            justify-content: center;
                             box-sizing: border-box;
+                            image-rendering: pixelated; /* Maximum sharpness */
+                            image-rendering: crisp-edges;
                         }
                         .barcode-img { 
                             max-width: 100%; 
                             height: auto; 
                             display: block;
+                            -webkit-print-color-adjust: exact;
                         }
                     </style>
                 </head>
