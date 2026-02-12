@@ -181,9 +181,19 @@ export default function Scanner() {
 
             if (data.success) {
                 setScanResult(data.guest);
+
+                // Success Feedback
+                const audio = new Audio('https://cdn-icons-mp3.flaticon.com/20/203/203131.mp3');
+                audio.play().catch(() => { });
+                if (navigator.vibrate) navigator.vibrate(200);
             } else {
                 setError(data.error || 'Invalid Security ID');
                 setErrorDetails(data.details || null);
+
+                // Error Feedback
+                const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+                audio.play().catch(() => { });
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
             }
         } catch (error) {
             console.error('Check-in failed:', error);

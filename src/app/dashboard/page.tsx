@@ -243,10 +243,17 @@ export default function Dashboard() {
                     fetchGuests(); // Refresh list
                     showToast(data.guest.name, 'Check-in Successful', 'success');
 
+                    // Success Feedback
                     const audio = new Audio('https://cdn-icons-mp3.flaticon.com/20/203/203131.mp3');
                     audio.play().catch(() => { });
+                    if (navigator.vibrate) navigator.vibrate(200);
                 } else {
                     showToast(uniqueId, data.error || 'Invalid Security ID', 'error');
+
+                    // Error Feedback
+                    const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-10.mp3');
+                    audio.play().catch(() => { });
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 }
             } catch (err) {
                 console.error("Scanner check-in failed", err);
@@ -269,8 +276,8 @@ export default function Dashboard() {
         try {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
-                width: 1.5, // Reduced from 2 to ensure fit
-                height: 100,
+                width: 1.5,
+                height: 70, // Reduced from 100 to prevent vertical overflow/clipping
                 displayValue: true,
                 fontSize: 20
             });
@@ -300,21 +307,23 @@ export default function Dashboard() {
                             background: white;
                             overflow: hidden;
                         }
-                        .barcode-container {
-                            width: 100%;
+                        .safe-area {
+                            width: 46mm; /* 2mm margin on each side */
+                            height: 22mm; /* 1.5mm margin top/bottom */
                             display: flex;
-                            justify-content: center;
                             align-items: center;
+                            justify-content: center;
+                            box-sizing: border-box;
                         }
                         .barcode-img { 
-                            max-width: 95%; 
+                            max-width: 100%; 
                             height: auto; 
                             display: block;
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="barcode-container">
+                    <div class="safe-area">
                         <img src="${barcodeDataUrl}" class="barcode-img" />
                     </div>
                     <script>
