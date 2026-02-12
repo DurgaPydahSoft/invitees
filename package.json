@@ -9,15 +9,29 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/jsbarcode": "^3.11.4",
+    "clsx": "^2.1.1",
+    "html-to-image": "^1.11.13",
+    "html5-qrcode": "^2.3.8",
+    "jsbarcode": "^3.12.3",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
+    "lucide-react": "^0.563.0",
+    "mongoose": "^9.2.1",
     "next": "16.1.6",
+    "qrcode.react": "^4.2.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "tailwind-merge": "^3.4.0",
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/uuid": "^10.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
