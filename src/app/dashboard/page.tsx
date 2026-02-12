@@ -309,8 +309,8 @@ export default function Dashboard() {
         try {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
-                width: 1.5,
-                height: 50,
+                width: 3, // Bolder lines to match BY3
+                height: 100, // Matches BCN,100
                 displayValue: true,
                 fontSize: 16
             });
@@ -342,7 +342,6 @@ export default function Dashboard() {
                         }
                         .barcode-container {
                             width: 100%;
-                            padding-left: 1.5mm;
                             display: flex;
                             align-items: flex-start;
                             justify-content: flex-start;
