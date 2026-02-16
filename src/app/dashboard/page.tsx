@@ -12,7 +12,7 @@ import { toPng } from 'html-to-image';
 import { useTheme } from '@/components/ThemeProvider';
 import { generateSmartPDF } from '@/lib/pdf-export';
 import { generateZPL, downloadZPLFile } from '@/lib/zpl-helper';
-import JsBarcode from 'jsbarcode';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface DashboardGuest {
     _id: string;
@@ -372,21 +372,14 @@ export default function Dashboard() {
         }
     };
 
-    const printLabel = () => {
-        if (!previewingLabel) return;
+    const printTemplateRef = useRef<HTMLDivElement>(null);
 
-        // Create a temporary canvas to generate the barcode data URL
-        const canvas = document.createElement('canvas');
+    const printLabel = async () => {
+        if (!previewingLabel || !printTemplateRef.current) return;
+
         try {
-            JsBarcode(canvas, previewingLabel.uniqueId, {
-                format: "CODE128",
-                width: 2, // Reduced from 3 to fit 45mm without bleeding
-                height: 100,
-                displayValue: true,
-                fontSize: 16,
-                margin: 0
-            });
-            const barcodeDataUrl = canvas.toDataURL("image/png");
+            // Generate image from the hidden React template
+            const dataUrl = await toPng(printTemplateRef.current, { quality: 1.0, pixelRatio: 3 });
 
             const printWindow = window.open('', '_blank');
             if (!printWindow) return;
@@ -406,32 +399,29 @@ export default function Dashboard() {
                             margin: 0; 
                             padding: 0; 
                             display: flex; 
-                            flex-direction: column; 
                             align-items: center; 
                             justify-content: center;
                             background: white;
                             overflow: hidden;
                         }
-                        .barcode-container {
+                        .print-content {
                             width: 100%;
+                            height: 100%;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            box-sizing: border-box;
-                            image-rendering: pixelated;
-                            image-rendering: crisp-edges;
                         }
-                        .barcode-img { 
-                            max-width: 100%; 
-                            height: auto; 
+                        img {
+                            width: 100%;
+                            height: auto;
                             display: block;
                             -webkit-print-color-adjust: exact;
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="barcode-container">
-                        <img src="${barcodeDataUrl}" class="barcode-img" />
+                    <div class="print-content">
+                        <img src="${dataUrl}" />
                     </div>
                     <script>
                         window.onload = () => {
@@ -448,8 +438,8 @@ export default function Dashboard() {
             printWindow.document.write(labelHtml);
             printWindow.document.close();
         } catch (err) {
-            console.error("Barcode generation for print failed", err);
-            showToast('Print Error', 'Could not generate barcode. Please try again.', 'error');
+            console.error("Label generation for print failed", err);
+            showToast('Print Error', 'Could not generate label image.', 'error');
         }
     };
 
@@ -1152,6 +1142,44 @@ export default function Dashboard() {
                     </div>
                 </div>
             )}
+
+            {/* Hidden Print Template for 2-Up QR Codes */}
+            <div style={{ position: 'absolute', top: -10000, left: -10000, pointerEvents: 'none' }}>
+                {previewingLabel && (
+                    <div
+                        ref={printTemplateRef}
+                        style={{
+                            width: '45mm',
+                            height: '20mm',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between', // Distribute evenly
+                            padding: '0 2mm', // Small safety padding at edges
+                            background: 'white'
+                        }}
+                    >
+                        {/* QR Code 1 (Left Label) */}
+                        <div style={{ width: '19mm', height: '19mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <QRCodeSVG
+                                value={previewingLabel.uniqueId}
+                                size={70} // Approx 18-19mm
+                                level="M"
+                                includeMargin={false}
+                            />
+                        </div>
+
+                        {/* QR Code 2 (Right Label) */}
+                        <div style={{ width: '19mm', height: '19mm', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <QRCodeSVG
+                                value={previewingLabel.uniqueId}
+                                size={70} // Approx 18-19mm
+                                level="M"
+                                includeMargin={false}
+                            />
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
