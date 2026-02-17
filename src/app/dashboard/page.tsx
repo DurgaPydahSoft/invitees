@@ -347,22 +347,21 @@ export default function Dashboard() {
                             margin: 0;
                             padding: 0;
                             display: flex;
-                            align-items: center;
-                            justify-content: center;
+                            align-items: flex-start;
+                            justify-content: flex-start;
                             box-sizing: border-box;
                             z-index: 9999;
                         }
                         .qr-img { 
-                            width: 18mm; /* Approx 50% width usage, well within 20mm height */
+                            width: 18mm;
                             height: 18mm;
+                            margin-top: 1mm;
+                            margin-left: 0;
                             object-fit: contain;
                             display: block;
                             image-rendering: pixelated;
                             -webkit-print-color-adjust: exact;
                         }
-                        /* Optional: Add text next to QR if using full width? 
-                           User requested "half of the size of our barcode" (which was full width).
-                           So 18mm-20mm centered is safe. */
                     </style>
                 </head>
                 <body>
