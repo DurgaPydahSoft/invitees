@@ -355,7 +355,7 @@ export default function Dashboard() {
                         .qr-img { 
                             width: 18mm;
                             height: 18mm;
-                            margin-top: 1mm;
+                            margin-top: 2mm;
                             margin-left: 0;
                             object-fit: contain;
                             display: block;
