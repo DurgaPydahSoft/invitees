@@ -395,10 +395,10 @@ export default function Dashboard() {
         try {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
-                width: 2,
-                height: 100,
+                width: 3, // Increased from 2 to make bars "brighter"
+                height: 80,
                 displayValue: true,
-                fontSize: 16,
+                fontSize: 14,
                 margin: 0
             });
             const barcodeDataUrl = canvas.toDataURL("image/png");
@@ -440,9 +440,11 @@ export default function Dashboard() {
                             box-sizing: border-box;
                         }
                         .barcode-img { 
-                            width: 100%;
-                            height: 100%;
-                            object-fit: fill;
+                            width: 26.25mm;
+                            height: 12mm;
+                            margin-top: 2mm;
+                            margin-left: 0;
+                            object-fit: contain;
                             display: block;
                             image-rendering: pixelated;
                         }
