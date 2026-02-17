@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +18,14 @@ export const metadata: Metadata = {
   title: "InviteQR - Secure Party Management",
   description: "Hand-crafted premium guest management and check-in system.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "InviteQR",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
@@ -51,6 +60,9 @@ export default function RootLayout({
                 <span className="text-xs font-black uppercase tracking-widest">Scanner</span>
               </a>
             </div>
+
+            {/* PWA Install Prompt */}
+            <PWAInstallPrompt />
           </div>
         </ThemeProvider>
       </body>

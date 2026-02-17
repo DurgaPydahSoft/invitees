@@ -308,7 +308,6 @@ export default function Dashboard() {
 
         try {
             // Generate QR Code Data URL
-            // Size scaled to be clear but fit within 20mm height
             const qrDataUrl = await QRCode.toDataURL(previewingLabel.uniqueId, {
                 width: 200,
                 margin: 0,
@@ -319,7 +318,10 @@ export default function Dashboard() {
             });
 
             const printWindow = window.open('', '_blank');
-            if (!printWindow) return;
+            if (!printWindow) {
+                showToast('Popup Blocked', 'Please allow popups to print labels.', 'error');
+                return;
+            }
 
             const labelHtml = `
             <html>
@@ -350,7 +352,6 @@ export default function Dashboard() {
                             align-items: flex-start;
                             justify-content: flex-start;
                             box-sizing: border-box;
-                            z-index: 9999;
                         }
                         .qr-img { 
                             width: 18mm;
@@ -360,7 +361,6 @@ export default function Dashboard() {
                             object-fit: contain;
                             display: block;
                             image-rendering: pixelated;
-                            -webkit-print-color-adjust: exact;
                         }
                     </style>
                 </head>
@@ -388,16 +388,14 @@ export default function Dashboard() {
         }
     };
 
-
     const printLabel = () => {
         if (!previewingLabel) return;
 
-        // Create a temporary canvas to generate the barcode data URL
         const canvas = document.createElement('canvas');
         try {
             JsBarcode(canvas, previewingLabel.uniqueId, {
                 format: "CODE128",
-                width: 2, // Reduced from 3 to fit 45mm without bleeding
+                width: 2,
                 height: 100,
                 displayValue: true,
                 fontSize: 16,
@@ -406,7 +404,10 @@ export default function Dashboard() {
             const barcodeDataUrl = canvas.toDataURL("image/png");
 
             const printWindow = window.open('', '_blank');
-            if (!printWindow) return;
+            if (!printWindow) {
+                showToast('Popup Blocked', 'Please allow popups to print labels.', 'error');
+                return;
+            }
 
             const labelHtml = `
             <html>
@@ -437,7 +438,6 @@ export default function Dashboard() {
                             align-items: flex-start;
                             justify-content: flex-start;
                             box-sizing: border-box;
-                            z-index: 9999;
                         }
                         .barcode-img { 
                             width: 100%;
@@ -445,7 +445,6 @@ export default function Dashboard() {
                             object-fit: fill;
                             display: block;
                             image-rendering: pixelated;
-                            -webkit-print-color-adjust: exact;
                         }
                     </style>
                 </head>

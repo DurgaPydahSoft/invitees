@@ -1,28 +1,40 @@
 /**
  * Utility to generate ZPL (Zebra Programming Language) strings for Zebra ZD230.
- * Designed for 2x1 inch or 4x2 inch label stock.
+ * Designed for 20mm x 45mm label orientation.
+ * DPI: 203 (8 dots/mm)
+ * Width: 20mm (160 dots)
+ * Height: 45mm (360 dots)
  */
 
-export const generateZPL = (guest: { name: string; uniqueId: string }) => {
-    // Custom template provided by the user for precise printer calibration
-    const zpl = `
+export const generateBarcodeZPL = (uniqueId: string) => {
+    return `
 ^XA
+^PW160
+^LL360
 ^LH0,0
-^LS0
-^LT0
-
-^BY3,3,100
-^FO0,0^BCN,100,Y,N,N^FD${guest.uniqueId}^FS
-
-^CF0,20,20
+^FO10,40
+^BY2,2,80
+^BCN,80,Y,N,N
+^FD${uniqueId}^FS
 ^XZ
 `.trim();
+};
 
-    return zpl;
+export const generateQRZPL = (uniqueId: string) => {
+    return `
+^XA
+^PW160
+^LL360
+^LH0,0
+^FO20,50
+^BQN,2,6
+^FDQA,${uniqueId}^FS
+^XZ
+`.trim();
 };
 
 /**
- * Downloads ZPL as a file for manual printing or helper-based processing.
+ * Downloads ZPL as a file (Legacy support)
  */
 export const downloadZPLFile = (guestName: string, zpl: string) => {
     const blob = new Blob([zpl], { type: "application/octet-stream" });
